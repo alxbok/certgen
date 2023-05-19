@@ -21,8 +21,8 @@ fn generate_self_signed_certificate() -> Result<(), Box<dyn std::error::Error>> 
     x509_builder.set_subject_name(build_subject_name().as_ref())?;
     x509_builder.set_issuer_name(build_subject_name().as_ref())?;
     x509_builder.set_pubkey(&private_key)?;
-    x509_builder.set_not_before(&Asn1Time::days_from_now(0)?.as_ref())?;
-    x509_builder.set_not_after(&Asn1Time::days_from_now(365)?.as_ref())?; // Valid for 1 year
+    x509_builder.set_not_before(Asn1Time::days_from_now(0)?.as_ref())?;
+    x509_builder.set_not_after(Asn1Time::days_from_now(365)?.as_ref())?; // Valid for 1 year
     x509_builder.set_serial_number(build_serial(1)?.as_ref())?; // Serial number of the certificate
     x509_builder.append_extension(build_basic_constraints_ext())?;
 
@@ -60,7 +60,7 @@ fn build_basic_constraints_ext() -> openssl::x509::X509Extension {
 }
 
 fn build_serial(num: u32) -> Result<Asn1Integer, ErrorStack> {
-    Asn1Integer::from_bn(&BigNum::from_u32(num)?.as_ref())
+    Asn1Integer::from_bn(BigNum::from_u32(num)?.as_ref())
 }
 
 fn main() {
