@@ -10,9 +10,9 @@ COPY ./Cargo.toml ./Cargo.toml
 RUN cargo build --release
 
 # now, copy project sources and build again
-RUN rm -rf src
+RUN rm -rf src && rm target/release/certgen
 COPY ./src ./src
-RUN rm target/release/certgen && cargo build --release
+RUN cargo build --release
 
 FROM debian:bullseye-slim
 WORKDIR /app
