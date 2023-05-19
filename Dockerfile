@@ -12,10 +12,10 @@ RUN cargo build --release
 # now, copy project sources and build again
 RUN rm -rf src
 COPY ./src ./src
-COPY .env .env
 RUN cargo clean && cargo build --release
 
 FROM debian:bullseye-slim
 WORKDIR /app
+COPY .env .env
 COPY --from=builder /tmp/certgen/target/release/certgen certgen
 ENTRYPOINT ["./certgen"]

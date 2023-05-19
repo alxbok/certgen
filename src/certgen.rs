@@ -10,7 +10,7 @@ use openssl::x509::{X509Builder, X509NameBuilder};
 use std::fs::File;
 use std::io::Write;
 
-pub fn generate_self_signed_certificate() -> Result<(), Box<dyn std::error::Error>> {
+pub fn generate_self_signed_certificate(cert_dir: &str) -> Result<(), Box<dyn std::error::Error>> {
     // Generate a new RSA key pair
     log::debug!("Generating RSA key...");
     let rsa = Rsa::generate(4096)?;
@@ -34,14 +34,14 @@ pub fn generate_self_signed_certificate() -> Result<(), Box<dyn std::error::Erro
     let certificate = x509_builder.build();
 
     // Save the private key to a file
-    let private_key_file = "generated-certs/pkey.pem";
+    let private_key_file = format!("{}/{}", cert_dir, "pkey.pem");
     log::debug!("Saving private key to {}", private_key_file);
     let private_key_pem = private_key.private_key_to_pem_pkcs8()?;
     let mut private_key_file = File::create(private_key_file)?;
     private_key_file.write_all(&private_key_pem)?;
 
     // Save the certificate to a file
-    let certificate_file = "generated-certs/cert.pem";
+    let certificate_file = format!("{}/{}", cert_dir, "cert.pem");
     log::debug!("Saving certificate key to {}", certificate_file);
     let certificate_pem = certificate.to_pem()?;
     let mut certificate_file = File::create(certificate_file)?;
