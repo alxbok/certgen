@@ -42,7 +42,7 @@ pub fn generate_self_signed_certificate(cert_dir: &str) -> Result<(), Box<dyn st
 
     // Save the certificate to a file
     let certificate_file = format!("{}/{}", cert_dir, "cert.pem");
-    log::debug!("Saving certificate key to {}", certificate_file);
+    log::debug!("Saving certificate to {}", certificate_file);
     let certificate_pem = certificate.to_pem()?;
     let mut certificate_file = File::create(certificate_file)?;
     certificate_file.write_all(&certificate_pem)?;
