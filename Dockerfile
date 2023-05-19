@@ -12,7 +12,7 @@ RUN cargo build --release
 # now, copy project sources and build again
 RUN rm -rf src
 COPY ./src ./src
-RUN cargo clean && cargo build --release
+RUN rm target/release/certgen && cargo build --release
 
 FROM debian:bullseye-slim
 WORKDIR /app
