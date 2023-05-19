@@ -11,11 +11,16 @@ use std::fs::File;
 use std::io::Write;
 
 fn generate_self_signed_certificate() -> Result<(), Box<dyn std::error::Error>> {
+    dotenv::dotenv()?;
+    env_logger::init_from_env(env_logger::Env::new());
+
     // Generate a new RSA key pair
+    log::info!("Generating RSA key...");
     let rsa = Rsa::generate(4096)?;
     let private_key = PKey::from_rsa(rsa)?;
 
     // Create a new certificate
+    log::info!("Configuring cert params");
     let mut x509_builder = X509Builder::new()?;
     x509_builder.set_version(2)?; // X509v3
     x509_builder.set_subject_name(build_subject_name().as_ref())?;
@@ -27,21 +32,24 @@ fn generate_self_signed_certificate() -> Result<(), Box<dyn std::error::Error>> 
     x509_builder.append_extension(build_basic_constraints_ext())?;
 
     // Sign the certificate with the private key
+    log::info!("Signing the certificate...");
     x509_builder.sign(&private_key, MessageDigest::sha256())?;
     let certificate = x509_builder.build();
 
     // Save the private key to a file
     let private_key_file = "generated-certs/privkey.pem";
+    log::info!("Saving private key to {}", private_key_file);
     let private_key_pem = private_key.private_key_to_pem_pkcs8()?;
     let mut private_key_file = File::create(private_key_file)?;
     private_key_file.write_all(&private_key_pem)?;
 
     // Save the certificate to a file
     let certificate_file = "generated-certs/cert.pem";
+    log::info!("Saving certificate key to {}", certificate_file);
     let certificate_pem = certificate.to_pem()?;
     let mut certificate_file = File::create(certificate_file)?;
     certificate_file.write_all(&certificate_pem)?;
-
+    log::info!("Done!");
     Ok(())
 }
 
