@@ -1,9 +1,20 @@
-cert
-  sign: self
-  name:
-    common: example.de
-    org: Example Inc.
-    country: DE
-  validity:
-    days: 365
-  
+certs:
+  - subject:
+      common: "example.de"
+      country: "DE"
+      org: "Example Inc."
+      org_unit: "Test OU"
+      state: "Hamburg"
+      locality: "Locality"
+    validity:
+      days: 365
+    key:
+      bits: 2048
+  - subject:
+      common: "example.com"
+      country: "DE"
+      org: "Example Inc."
+    validity:
+      days: 365
+    key:
+      bits: 2048
