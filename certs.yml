@@ -1,0 +1,9 @@
+cert
+  sign: self
+  name:
+    common: example.de
+    org: Example Inc.
+    country: DE
+  validity:
+    days: 365
+  

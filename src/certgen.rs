@@ -6,6 +6,7 @@ use openssl::hash::MessageDigest;
 use openssl::nid::Nid;
 use openssl::pkey::PKey;
 use openssl::rsa::Rsa;
+use openssl::x509::X509Name;
 use openssl::x509::{X509Builder, X509NameBuilder};
 use std::fs::File;
 use std::io::Write;
@@ -20,8 +21,8 @@ pub fn generate_self_signed_certificate(cert_dir: &str) -> Result<(), Box<dyn st
     log::debug!("Configuring cert params");
     let mut x509_builder = X509Builder::new()?;
     x509_builder.set_version(2)?; // X509v3
-    x509_builder.set_subject_name(build_subject_name().as_ref())?;
-    x509_builder.set_issuer_name(build_subject_name().as_ref())?;
+    x509_builder.set_subject_name(build_subject_name()?.as_ref())?;
+    x509_builder.set_issuer_name(build_subject_name()?.as_ref())?;
     x509_builder.set_pubkey(&private_key)?;
     x509_builder.set_not_before(Asn1Time::days_from_now(0)?.as_ref())?;
     x509_builder.set_not_after(Asn1Time::days_from_now(365)?.as_ref())?; // Valid for 1 year
@@ -50,12 +51,12 @@ pub fn generate_self_signed_certificate(cert_dir: &str) -> Result<(), Box<dyn st
     Ok(())
 }
 
-fn build_subject_name() -> openssl::x509::X509Name {
-    let mut builder = X509NameBuilder::new().unwrap();
-    builder
-        .append_entry_by_nid(Nid::COMMONNAME, "localhost")
-        .unwrap();
-    builder.build()
+fn build_subject_name() -> Result<X509Name, ErrorStack> {
+    let mut builder = X509NameBuilder::new()?;
+    builder.append_entry_by_nid(Nid::COMMONNAME, "example.com")?;
+    builder.append_entry_by_nid(Nid::COUNTRYNAME, "US")?;
+    builder.append_entry_by_nid(Nid::ORGANIZATIONNAME, "Example Inc.")?;
+    Ok(builder.build())
 }
 
 fn build_basic_constraints_ext() -> openssl::x509::X509Extension {
