@@ -1,21 +1,19 @@
-FROM rust:slim as builder
+FROM rust AS builder
 WORKDIR /tmp
 RUN apt update && apt upgrade -y && apt install -y libssl-dev pkg-config
 
 # this builds and caches all the dependencies in an extra layer
 RUN cargo new --bin certgen
 WORKDIR /tmp/certgen
-COPY ./Cargo.lock ./Cargo.lock
-COPY ./Cargo.toml ./Cargo.toml
+COPY Cargo.toml Cargo.lock ./
 RUN cargo build --release
 
 # now, copy project sources and build again
-RUN rm -rf src && rm target/release/certgen
-COPY ./src ./src
+COPY src ./src
 RUN cargo build --release
 
-FROM debian:bullseye-slim
-WORKDIR /app
-COPY .env .env
-COPY --from=builder /tmp/certgen/target/release/certgen certgen
+FROM debian:bookworm-slim
+RUN apt update && apt upgrade -y && apt install -y openssl
+COPY --from=builder /tmp/certgen/target/release/certgen .
+COPY .env certs.yml ./
 ENTRYPOINT ["./certgen"]
