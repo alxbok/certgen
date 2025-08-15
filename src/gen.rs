@@ -9,17 +9,14 @@ use openssl::pkey::PKey;
 use openssl::rand;
 use openssl::rsa::Rsa;
 use openssl::x509::extension::BasicConstraints;
+use openssl::x509::extension::ExtendedKeyUsage;
 use openssl::x509::X509Extension;
 use openssl::x509::X509Name;
-use openssl::x509::extension::ExtendedKeyUsage;
 use openssl::x509::{X509Builder, X509NameBuilder};
 use std::fs::File;
 use std::io::Write;
 
-pub fn generate_cert(
-    cert_dir: &str,
-    cert_spec: &spec::Certificate,
-) -> Result<(), Box<dyn std::error::Error>> {
+pub fn generate_cert(cert_dir: &str, cert_spec: &spec::Certificate) -> Result<(), Box<dyn std::error::Error>> {
     log::debug!("Generating RSA key...");
     let rsa = Rsa::generate(cert_spec.key.bits)?;
     let private_key = PKey::from_rsa(rsa)?;
